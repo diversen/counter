@@ -35,7 +35,7 @@ class counter {
      */
     function subModulePostContent ($options) {
         
-        $hits = dbQ::setSelectNumRows('counter')->filter('uri =', $_SERVER['REQUEST_URI'])->fetch();
+        $hits = db_q::setSelectNumRows('counter')->filter('uri =', $_SERVER['REQUEST_URI'])->fetch();
         ++$hits;
         $str = "This page has viewed $hits times. First hit: ";
         $first = self::getFirstHit($_SERVER['REQUEST_URI']);
@@ -52,7 +52,7 @@ class counter {
      * @return type
      */
     function getFirstHit($uri) {
-        return $row = dbQ::setSelect('counter')->
+        return $row = db_q::setSelect('counter')->
                 filter('uri =', $uri)->
                 order('hitdate', 'ASC')->
                 fetchSingle();
