@@ -33,7 +33,7 @@ class counter {
      * @param array $options info about the parent module. Not used here
      * @return string $str the string will be used by 'parent' module
      */
-    function subModulePostContent ($options) {
+    public static function subModulePostContent ($options) {
         
         $hits = db_q::setSelectNumRows('counter')->filter('uri =', $_SERVER['REQUEST_URI'])->fetch();
         ++$hits;
@@ -51,7 +51,7 @@ class counter {
      * @param type $uri
      * @return type
      */
-    function getFirstHit($uri) {
+    static function getFirstHit($uri) {
         return $row = db_q::setSelect('counter')->
                 filter('uri =', $uri)->
                 order('hitdate', 'ASC')->
