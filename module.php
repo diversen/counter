@@ -35,13 +35,15 @@ class counter {
      */
     public static function subModulePostContent ($options) {
         
-        $hits = db_q::setSelectNumRows('counter')->filter('uri =', $_SERVER['REQUEST_URI'])->fetch();
+        $hits = db_q::numRows('counter')->filter('uri =', $_SERVER['REQUEST_URI'])->fetch();
         ++$hits;
-        $str = "This page has viewed $hits times. First hit: ";
+        $str = lang::translate('This page has viewed <span class="notranslate">{HITS}</span> times. ', array ('HITS' => $hits));
         $first = self::getFirstHit($_SERVER['REQUEST_URI']);
         
         if (!empty($first)) {
-            $since = time::getDateString($first['hitdate']);
+            $hit = time::getDateString($first['hitdate']);
+            $since = lang::translate('First hit: <span class="notranslate">{FIRST_HIT}</span>', 
+                    array ('FIRST_HIT' => $hit));
             return $str.=$since;
         } 
     }
@@ -51,8 +53,8 @@ class counter {
      * @param type $uri
      * @return type
      */
-    static function getFirstHit($uri) {
-        return $row = db_q::setSelect('counter')->
+    public static function getFirstHit($uri) {
+        return $row = db_q::select('counter')->
                 filter('uri =', $uri)->
                 order('hitdate', 'ASC')->
                 fetchSingle();
