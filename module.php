@@ -3,7 +3,6 @@
 // include some common date functions
 // date functions are some of the only files needed to be included
 // as they are not placed in autoloaded classes
-include_once "coslib/date.php";
 
 class counter {
   
@@ -13,18 +12,23 @@ class counter {
      * @param type $level
      */
     function runLevel ($level) {
-        
+        cosRB::connect();
         if ($level == 6 ) {
-            cosRB::connect();
+            
             $bean = cosRB::getBean('counter');
             
             $ary = array ();
             $bean->agent = $_SERVER['HTTP_USER_AGENT'];
             $bean->module = moduleloader::$running;
             $bean->uri = $_SERVER['REQUEST_URI'];
-            $bean->hits++;
-            $bean->hitdate = dateGetDateNow(array ('hms' => true));
+            
+            $bean->hitdate = date::getDateNow(array ('hms' => true));
             R::store($bean);
+            
+            $hits = cosRB::getBean('counter_hits', 'uri', $_SERVER['REQUEST_URI']);
+            $hits->hits++;
+            R::store($hits);
+            
         }
     }
     
@@ -35,8 +39,9 @@ class counter {
      */
     public static function subModulePostContent ($options) {
         
-        $hits = db_q::numRows('counter')->filter('uri =', $_SERVER['REQUEST_URI'])->fetch();
-        ++$hits;
+        $row = db_q::select('counter_hits')->filter('uri =', $_SERVER['REQUEST_URI'])->fetchSingle();
+        $hits = $row['hits']++;
+        //++$hits;
         $str = lang::translate('This page has viewed <span class="notranslate">{HITS}</span> times. ', array ('HITS' => $hits));
         $first = self::getFirstHit($_SERVER['REQUEST_URI']);
         
@@ -46,6 +51,24 @@ class counter {
                     array ('FIRST_HIT' => $hit));
             return $str.=$since;
         } 
+    }
+    
+    public static function updateCounterHits () {
+        cosRB::connect();
+        $db = new db();
+        $rows = $db->selectQuery("SELECT distinct(uri) FROM counter");
+
+        foreach($rows as $row) {
+            $hits = db_q::numRows('counter')->filter('uri =', $row['uri'])->fetch();
+            $bean = cosRB::getBean('counter_hits', 'uri', $row['uri']);
+            $bean->uri = $row['uri'];
+            $bean->hits = $hits;
+            R::store($bean);
+        }
+    }
+    
+    public static function fixAction() {
+        self::updateCounterHits();
     }
     
     /**
