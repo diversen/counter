@@ -12,12 +12,10 @@ class counter {
      * @param type $level
      */
     function runLevel ($level) {
-        cosRB::connect();
+        db_rb::connect();
         if ($level == 6 ) {
             
-            $bean = cosRB::getBean('counter');
-            
-            $ary = array ();
+            $bean = db_rb::getBean('counter');
             $bean->agent = $_SERVER['HTTP_USER_AGENT'];
             $bean->module = moduleloader::$running;
             $bean->uri = $_SERVER['REQUEST_URI'];
@@ -25,7 +23,7 @@ class counter {
             $bean->hitdate = date::getDateNow(array ('hms' => true));
             R::store($bean);
             
-            $hits = cosRB::getBean('counter_hits', 'uri', $_SERVER['REQUEST_URI']);
+            $hits = db_rb::getBean('counter_hits', 'uri', $_SERVER['REQUEST_URI']);
             $hits->hits++;
             R::store($hits);
             
@@ -53,23 +51,25 @@ class counter {
         } 
     }
     
+    /**
+     * used when updateing to 2.41
+     * MySQL innoDB does not like counting many rows
+     * Add a row to table counter_hits with uri and number of hits. 
+     */
     public static function updateCounterHits () {
-        cosRB::connect();
+        db_rb::connect();
         $db = new db();
         $rows = $db->selectQuery("SELECT distinct(uri) FROM counter");
 
         foreach($rows as $row) {
             $hits = db_q::numRows('counter')->filter('uri =', $row['uri'])->fetch();
-            $bean = cosRB::getBean('counter_hits', 'uri', $row['uri']);
+            $bean = db_rb::getBean('counter_hits', 'uri', $row['uri']);
             $bean->uri = $row['uri'];
             $bean->hits = $hits;
             R::store($bean);
         }
     }
-    
-    public static function fixAction() {
-        self::updateCounterHits();
-    }
+
     
     /**
      * get first hit on a uri

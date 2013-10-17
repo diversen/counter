@@ -13,7 +13,6 @@ $_INSTALL['INSTALL'] = function ($version = null) {
     if ($version == '2.41') {
         echo "The next operation may take some time - be patient!\n";
         moduleloader::includeModule('counter');
-        
         $c = new counter();
         $c->updateCounterHits();
     }  
