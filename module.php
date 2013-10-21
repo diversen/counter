@@ -24,6 +24,9 @@ class counter {
             R::store($bean);
             
             $hits = db_rb::getBean('counter_hits', 'uri', $_SERVER['REQUEST_URI']);
+            if (!$hits->uri) {
+                $hits->uri = $_SERVER['REQUEST_URI'];
+            }
             $hits->hits++;
             R::store($hits);
             
@@ -37,9 +40,12 @@ class counter {
      */
     public static function subModulePostContent ($options) {
         
+        //print_r($_SERVER);
         $row = db_q::select('counter_hits')->filter('uri =', $_SERVER['REQUEST_URI'])->fetchSingle();
+        if (!isset($row['hits'])) {
+            return;
+        }
         $hits = $row['hits']++;
-        //++$hits;
         $str = lang::translate('This page has viewed <span class="notranslate">{HITS}</span> times. ', array ('HITS' => $hits));
         $first = self::getFirstHit($_SERVER['REQUEST_URI']);
         
