@@ -2,8 +2,8 @@
 
 $_INSTALL['NAME'] = 'counter';
 
-$_INSTALL['VERSIONS'] = array ('1.81', '1.82', '2.41');
-$_INSTALL['VERSION'] = 2.41;
+$_INSTALL['VERSIONS'] = array ('1.81', '1.82', '2.41', '2.411');
+$_INSTALL['VERSION'] = 2.411;
 $_INSTALL['RUN_LEVEL'] = '0,6';
 
 $_INSTALL['PUBLIC_CLONE_URL'] = "git://github.com/diversen/counter.git";
