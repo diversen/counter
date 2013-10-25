@@ -1,3 +1,5 @@
+DROP table IF EXISTS `counter_hits`;
+
 CREATE TABLE `counter_hits` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `hits` int(11) unsigned DEFAULT NULL,

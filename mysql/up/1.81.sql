@@ -1,3 +1,5 @@
+DROP table IF EXISTS `counter`;
+
 CREATE TABLE `counter` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `agent` varchar(1024) COLLATE utf8_unicode_ci DEFAULT NULL,

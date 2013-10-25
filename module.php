@@ -13,24 +13,33 @@ class counter {
      */
     function runLevel ($level) {
         db_rb::connect();
-        if ($level == 6 ) {
-            
-            $bean = db_rb::getBean('counter');
-            $bean->agent = $_SERVER['HTTP_USER_AGENT'];
-            $bean->module = moduleloader::$running;
-            $bean->uri = $_SERVER['REQUEST_URI'];
-            
-            $bean->hitdate = date::getDateNow(array ('hms' => true));
-            R::store($bean);
-            
-            $hits = db_rb::getBean('counter_hits', 'uri', $_SERVER['REQUEST_URI']);
-            if (!$hits->uri) {
-                $hits->uri = $_SERVER['REQUEST_URI'];
-            }
-            $hits->hits++;
-            R::store($hits);
-            
+        if ($level == 5 ) {
+            self::saveExtendedInfo();
+            self::saveBasicInfo();
         }
+    }
+    
+    public static function saveBasicInfo() {
+        $hits = db_rb::getBean('counter_hits', 'uri', $_SERVER['REQUEST_URI']);
+        if (!$hits->uri) {
+            $hits->uri = $_SERVER['REQUEST_URI'];
+        }
+        $hits->hits++;
+        return R::store($hits);
+    }
+    
+    public static function saveExtendedInfo() {
+        $bean = db_rb::getBean('counter', 'uri', $_SERVER['REQUEST_URI']);
+        if ($bean->uri) {
+            if (!config::getModuleIni('counter_extended_info')) {
+                return;
+            }
+        }
+        $bean->agent = $_SERVER['HTTP_USER_AGENT'];
+        $bean->module = moduleloader::$running;
+        $bean->uri = $_SERVER['REQUEST_URI'];    
+        $bean->hitdate = date::getDateNow(array ('hms' => true));
+        return R::store($bean);
     }
     
     /**
@@ -40,12 +49,15 @@ class counter {
      */
     public static function subModulePostContent ($options) {
         
-        //print_r($_SERVER);
         $row = db_q::select('counter_hits')->filter('uri =', $_SERVER['REQUEST_URI'])->fetchSingle();
+        
+        // first hit
         if (!isset($row['hits'])) {
-            return;
+            $hits = 1;
+        } else {
+            $hits = $row['hits']++;
         }
-        $hits = $row['hits']++;
+        
         $str = lang::translate('This page has viewed <span class="notranslate">{HITS}</span> times. ', array ('HITS' => $hits));
         $first = self::getFirstHit($_SERVER['REQUEST_URI']);
         
