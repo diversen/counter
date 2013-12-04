@@ -31,6 +31,8 @@ class counter {
     public static function saveExtendedInfo() {
         $bean = db_rb::getBean('counter', 'uri', $_SERVER['REQUEST_URI']);
         if ($bean->uri) {
+            // we only keep one row for every page when not using extended info
+            // e.g. small heroku site where we want to be cheap. 5 MB max !
             if (!config::getModuleIni('counter_extended_info')) {
                 return;
             }
