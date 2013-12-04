@@ -37,8 +37,10 @@ class counter {
         }
         $bean->agent = $_SERVER['HTTP_USER_AGENT'];
         $bean->module = moduleloader::$running;
-        $bean->uri = $_SERVER['REQUEST_URI'];    
-        $bean->hitdate = date::getDateNow(array ('hms' => true));
+        $bean->uri = $_SERVER['REQUEST_URI'];
+        if (!$bean->hitdate) {
+            $bean->hitdate = date::getDateNow(array ('hms' => true));
+        }
         return R::store($bean);
     }
     
@@ -95,9 +97,10 @@ class counter {
      * @return type
      */
     public static function getFirstHit($uri) {
-        return $row = db_q::select('counter')->
+        $row = db_q::select('counter')->
                 filter('uri =', $uri)->
                 order('hitdate', 'ASC')->
                 fetchSingle();
+        return $row;
     }
 }
