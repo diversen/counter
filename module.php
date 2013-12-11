@@ -20,6 +20,9 @@ class counter {
     }
     
     public static function saveBasicInfo() {
+        if (strings::strlen($_SERVER['REQUEST_URI'])> 255) {
+            return;
+        } 
         $hits = db_rb::getBean('counter_hits', 'uri', $_SERVER['REQUEST_URI']);
         if (!$hits->uri) {
             $hits->uri = $_SERVER['REQUEST_URI'];
@@ -29,6 +32,9 @@ class counter {
     }
     
     public static function saveExtendedInfo() {
+        if (strings::strlen($_SERVER['REQUEST_URI'])> 255) {
+            return;
+        } 
         $bean = db_rb::getBean('counter', 'uri', $_SERVER['REQUEST_URI']);
         if ($bean->uri) {
             if (!config::getModuleIni('counter_extended_info')) {
