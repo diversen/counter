@@ -37,14 +37,18 @@ class counter {
         } 
         $bean = db_rb::getBean('counter', 'uri', $_SERVER['REQUEST_URI']);
         if ($bean->uri) {
+            // we only keep one row for every page when not using extended info
+            // e.g. small heroku site where we want to be cheap. 5 MB max !
             if (!config::getModuleIni('counter_extended_info')) {
                 return;
             }
         }
         $bean->agent = $_SERVER['HTTP_USER_AGENT'];
         $bean->module = moduleloader::$running;
-        $bean->uri = $_SERVER['REQUEST_URI'];    
-        $bean->hitdate = date::getDateNow(array ('hms' => true));
+        $bean->uri = $_SERVER['REQUEST_URI'];
+        if (!$bean->hitdate) {
+            $bean->hitdate = date::getDateNow(array ('hms' => true));
+        }
         return R::store($bean);
     }
     
@@ -101,9 +105,10 @@ class counter {
      * @return type
      */
     public static function getFirstHit($uri) {
-        return $row = db_q::select('counter')->
+        $row = db_q::select('counter')->
                 filter('uri =', $uri)->
                 order('hitdate', 'ASC')->
                 fetchSingle();
+        return $row;
     }
 }
