@@ -43,7 +43,14 @@ class counter {
                 return;
             }
         }
-        $bean->agent = $_SERVER['HTTP_USER_AGENT'];
+        
+        if (!empty($_SERVER['HTTP_USER_AGENT'])) {
+            $agent = $_SERVER['HTTP_USER_AGENT'];
+        } else {
+            $agent = 'EMPTY_AGENT';
+        }
+        
+        $bean->agent = $agent;
         $bean->module = moduleloader::$running;
         $bean->uri = $_SERVER['REQUEST_URI'];
         if (!$bean->hitdate) {
@@ -68,7 +75,7 @@ class counter {
             $hits = $row['hits']++;
         }
         
-        $str = lang::translate('This page has viewed <span class="notranslate">{HITS}</span> times. ', array ('HITS' => $hits));
+        $str = lang::translate('This page has been viewed <span class="notranslate">{HITS}</span> times. ', array ('HITS' => $hits));
         $first = self::getFirstHit($_SERVER['REQUEST_URI']);
         
         if (!empty($first)) {
