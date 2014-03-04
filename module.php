@@ -13,7 +13,7 @@ class counter {
      */
     function runLevel ($level) {
         db_rb::connect();
-        if ($level == 5 ) {
+        if ($level == 6 ) {
             self::saveExtendedInfo();
             self::saveBasicInfo();
         }
