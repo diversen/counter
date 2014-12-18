@@ -1,5 +1,6 @@
 <?php
 
+use diversen\db\rb as db_rb;
 // include some common date functions
 // date functions are some of the only files needed to be included
 // as they are not placed in autoloaded classes
