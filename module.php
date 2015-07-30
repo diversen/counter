@@ -1,7 +1,13 @@
 <?php
 
-use diversen\db\rb as db_rb;
-use diversen\db\q as db_q;
+use diversen\db\rb;
+use diversen\db\q;
+use diversen\date;
+use diversen\strings;
+use diversen\lang;
+use diversen\time;
+use diversen\conf;
+use diversen\moduleloader;
 // include some common date functions
 // date functions are some of the only files needed to be included
 // as they are not placed in autoloaded classes
@@ -14,7 +20,7 @@ class counter {
      * @param type $level
      */
     function runLevel ($level) {
-        db_rb::connect();
+        rb::connect();
         if ($level == 6 ) {
             self::saveExtendedInfo();
             self::saveBasicInfo();
@@ -25,7 +31,7 @@ class counter {
         if (strings::strlen($_SERVER['REQUEST_URI'])> 255) {
             return;
         } 
-        $hits = db_rb::getBean('counter_hits', 'uri', $_SERVER['REQUEST_URI']);
+        $hits = rb::getBean('counter_hits', 'uri', $_SERVER['REQUEST_URI']);
         if (!$hits->uri) {
             $hits->uri = $_SERVER['REQUEST_URI'];
         }
@@ -37,7 +43,7 @@ class counter {
         if (strings::strlen($_SERVER['REQUEST_URI'])> 255) {
             return;
         } 
-        $bean = db_rb::getBean('counter', 'uri', $_SERVER['REQUEST_URI']);
+        $bean = rb::getBean('counter', 'uri', $_SERVER['REQUEST_URI']);
         if ($bean->uri) {
             // we only keep one row for every page when not using extended info
             // e.g. small heroku site where we want to be cheap. 5 MB max !
@@ -68,7 +74,7 @@ class counter {
      */
     public static function subModulePostContent ($options) {
         
-        $row = db_q::select('counter_hits')->filter('uri =', $_SERVER['REQUEST_URI'])->fetchSingle();
+        $row = q::select('counter_hits')->filter('uri =', $_SERVER['REQUEST_URI'])->fetchSingle();
         
         // first hit
         if (!isset($row['hits'])) {
@@ -94,13 +100,13 @@ class counter {
      * Add a row to table counter_hits with uri and number of hits. 
      */
     public static function updateCounterHits () {
-        db_rb::connect();
+        rb::connect();
         $db = new db();
         $rows = $db->selectQuery("SELECT distinct(uri) FROM counter");
 
         foreach($rows as $row) {
-            $hits = db_q::numRows('counter')->filter('uri =', $row['uri'])->fetch();
-            $bean = db_rb::getBean('counter_hits', 'uri', $row['uri']);
+            $hits = q::numRows('counter')->filter('uri =', $row['uri'])->fetch();
+            $bean = rb::getBean('counter_hits', 'uri', $row['uri']);
             $bean->uri = $row['uri'];
             $bean->hits = $hits;
             R::store($bean);
@@ -114,7 +120,7 @@ class counter {
      * @return type
      */
     public static function getFirstHit($uri) {
-        $row = db_q::select('counter')->
+        $row = q::select('counter')->
                 filter('uri =', $uri)->
                 order('hitdate', 'ASC')->
                 fetchSingle();
