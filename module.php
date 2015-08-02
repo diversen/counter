@@ -1,13 +1,15 @@
 <?php
 
-use diversen\db\rb;
-use diversen\db\q;
-use diversen\date;
-use diversen\strings;
-use diversen\lang;
-use diversen\time;
 use diversen\conf;
+use diversen\date;
+use diversen\db;
+use diversen\db\q;
+use diversen\db\rb;
+use diversen\lang;
 use diversen\moduleloader;
+use diversen\strings;
+use diversen\time;
+
 // include some common date functions
 // date functions are some of the only files needed to be included
 // as they are not placed in autoloaded classes
