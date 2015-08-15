@@ -1,5 +1,7 @@
 <?php
 
+namespace modules\counter;
+
 use diversen\conf;
 use diversen\date;
 use diversen\db;
@@ -14,7 +16,7 @@ use diversen\time;
 // date functions are some of the only files needed to be included
 // as they are not placed in autoloaded classes
 
-class counter {
+class module {
   
     /**
      * this module will run at a run level. 
@@ -38,7 +40,7 @@ class counter {
             $hits->uri = $_SERVER['REQUEST_URI'];
         }
         $hits->hits++;
-        return R::store($hits);
+        return \R::store($hits);
     }
     
     public static function saveExtendedInfo() {
@@ -66,15 +68,20 @@ class counter {
         if (!$bean->hitdate) {
             $bean->hitdate = date::getDateNow(array ('hms' => true));
         }
-        return R::store($bean);
+        return \R::store($bean);
     }
     
     /**
      * a method which can be used to attach content to a parent module
+     * only use counter when mode == view
      * @param array $options info about the parent module. Not used here
      * @return string $str the string will be used by 'parent' module
      */
     public static function subModulePostContent ($options) {
+        
+        if ($options['mode'] != 'view') {
+            return;
+        }
         
         $row = q::select('counter_hits')->filter('uri =', $_SERVER['REQUEST_URI'])->fetchSingle();
         
@@ -111,7 +118,7 @@ class counter {
             $bean = rb::getBean('counter_hits', 'uri', $row['uri']);
             $bean->uri = $row['uri'];
             $bean->hits = $hits;
-            R::store($bean);
+            \R::store($bean);
         }
     }
 
