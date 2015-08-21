@@ -1,9 +1,6 @@
 <?php
 
-
-
 $_INSTALL['NAME'] = 'counter';
-
 $_INSTALL['VERSION'] = 3.01;
 $_INSTALL['RUN_LEVEL'] = '0,6';
 
