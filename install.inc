@@ -1,7 +1,6 @@
 <?php
 
 $_INSTALL['NAME'] = 'counter';
-$_INSTALL['VERSION'] = 3.01;
 $_INSTALL['RUN_LEVEL'] = '0,6';
 
 $_INSTALL['PUBLIC_CLONE_URL'] = "git://github.com/diversen/counter.git";
