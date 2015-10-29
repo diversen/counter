@@ -79,7 +79,7 @@ class module {
      */
     public static function subModulePostContent ($options) {
         
-        if ($options['mode'] != 'view') {
+        if (!isset($options['mode']) OR $options['mode'] != 'view') {
             return;
         }
         
