@@ -1,0 +1,1 @@
+RENAME TABLE `counterhits` TO `counter_hits`;
