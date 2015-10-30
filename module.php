@@ -35,7 +35,7 @@ class module {
         if (strings::strlen($_SERVER['REQUEST_URI'])> 255) {
             return;
         } 
-        $hits = rb::getBean('counter_hits', 'uri', $_SERVER['REQUEST_URI']);
+        $hits = rb::getBean('counterhits', 'uri', $_SERVER['REQUEST_URI']);
         if (!$hits->uri) {
             $hits->uri = $_SERVER['REQUEST_URI'];
         }
@@ -83,7 +83,7 @@ class module {
             return;
         }
         
-        $row = q::select('counter_hits')->filter('uri =', $_SERVER['REQUEST_URI'])->fetchSingle();
+        $row = q::select('counterhits')->filter('uri =', $_SERVER['REQUEST_URI'])->fetchSingle();
         
         // first hit
         if (!isset($row['hits'])) {
@@ -106,7 +106,7 @@ class module {
     /**
      * used when updateing to 2.41
      * MySQL innoDB does not like counting many rows
-     * Add a row to table counter_hits with uri and number of hits. 
+     * Add a row to table counterhits with uri and number of hits. 
      */
     public static function updateCounterHits () {
         rb::connect();
@@ -115,7 +115,7 @@ class module {
 
         foreach($rows as $row) {
             $hits = q::numRows('counter')->filter('uri =', $row['uri'])->fetch();
-            $bean = rb::getBean('counter_hits', 'uri', $row['uri']);
+            $bean = rb::getBean('counterhits', 'uri', $row['uri']);
             $bean->uri = $row['uri'];
             $bean->hits = $hits;
             \R::store($bean);
