@@ -11,6 +11,7 @@ use diversen\lang;
 use diversen\moduleloader;
 use diversen\strings;
 use diversen\time;
+use RedBeanPHP\R;
 
 // include some common date functions
 // date functions are some of the only files needed to be included
@@ -40,7 +41,7 @@ class module {
             $hits->uri = $_SERVER['REQUEST_URI'];
         }
         $hits->hits++;
-        return \R::store($hits);
+        return R::store($hits);
     }
     
     public static function saveExtendedInfo() {
@@ -68,7 +69,7 @@ class module {
         if (!$bean->hitdate) {
             $bean->hitdate = date::getDateNow(array ('hms' => true));
         }
-        return \R::store($bean);
+        return R::store($bean);
     }
     
     /**
